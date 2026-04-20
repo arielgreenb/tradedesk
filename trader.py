@@ -68,12 +68,16 @@ def get_price_history(ticker: str, days: int = 30) -> list[dict]:
     """Fetch recent daily price history for context."""
     data = yf.download(ticker, period=f"{days}d", interval="1d", progress=False)
     history = []
+    # Flatten multi-level columns if present (newer yfinance versions)
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
     for date_idx, row in data.iterrows():
-        history.append({
-            "date":  str(date_idx.date()),
-            "close": round(float(row["Close"]), 2),
-            "volume": int(row["Volume"])
-        })
+        try:
+            close  = round(float(row["Close"]),  2)
+            volume = int(row["Volume"])
+            history.append({"date": str(date_idx.date()), "close": close, "volume": volume})
+        except Exception:
+            continue
     return history[-10:]   # last 10 days is enough context
 
 
