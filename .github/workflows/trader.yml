@@ -20,6 +20,7 @@ on:
 jobs:
   run-trader:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,6 +32,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install anthropic yfinance supabase pytz
+
+      - name: Debug Anthropic Models
+        run: python debug_models.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Run trading session
         env:
