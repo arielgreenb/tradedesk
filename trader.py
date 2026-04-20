@@ -1,3 +1,4 @@
+import pandas as pd
 """
 TradeDesk Autonomous Trading Bot
 Powered by Claude AI + Yahoo Finance + Supabase
