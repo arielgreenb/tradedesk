@@ -215,7 +215,7 @@ Respond only with the JSON format specified.
 """
 
     response = claude.messages.create(
-        model="claude-3-7-sonnet-latest",
+        model="claude-3-5-sonnet-latest",
         max_tokens=1000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}]
