@@ -1,1 +1,47 @@
+name: TradeDesk Autonomous Trader
 
+on:
+  schedule:
+    - cron: '31 13 * * 1-5'
+    - cron: '0 16 * * 1-5'
+    - cron: '30 18 * * 1-5'
+    - cron: '1 20 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        required: false
+        default: 'trade'
+        type: choice
+        options:
+          - trade
+          - eod
+
+jobs:
+  run-trader:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install anthropic yfinance supabase pytz
+
+      - name: Run trading session
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "eod" ]; then
+            python trader.py eod
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "$(date -u +%H%M)" = "2001" ]; then
+            python trader.py eod
+          else
+            python trader.py
+          fi
